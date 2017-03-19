@@ -41,6 +41,16 @@ function add_songs(songlist) {
     }
 };
 
+function get_parameter(parameterName, defaultvalue) {
+    var retval = defaultvalue;
+    location.search.substr(1).split("&").forEach(function (item) {
+        var tmp = item.split("=");
+        if (tmp[0] === parameterName) 
+            retval = decodeURIComponent(tmp[1]);
+    });
+    return retval;
+}
+
 function start_player() {
 
     var body = document.getElementsByTagName("body")[0];
@@ -78,8 +88,10 @@ function start_player() {
     show_controls.innerHTML = "Controls";
     body.appendChild(show_controls);
 
+
+
     var xmlhttp = new XMLHttpRequest();
-    xmlhttp.open('GET', '/playlist.json', true);
+    xmlhttp.open('GET', get_parameter('playlist','/playlist.json'), true);
     xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4) {
             if(xmlhttp.status == 200) {
