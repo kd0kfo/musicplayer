@@ -46,9 +46,14 @@ function start_player() {
     var body = document.getElementsByTagName("body")[0];
     _player = document.getElementById("player");
    
+    var playlist_frame = document.createElement("div");
+    playlist_frame.setAttribute("id", "playlist_frame");
+    playlist_frame.setAttribute("style", "overflow:scroll; height:400px");
+    body.appendChild(playlist_frame);
+
     _playlist = document.createElement("ul");
     _playlist.setAttribute("id", "playlist");
-    body.appendChild(_playlist);
+    playlist_frame.appendChild(_playlist);
    
     _previous = document.createElement("button");
     _previous.setAttribute("id", "previous");
