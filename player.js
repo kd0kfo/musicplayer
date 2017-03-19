@@ -65,6 +65,14 @@ function start_player() {
     _next.innerHTML = "Next";
     body.appendChild(_next);
 
+    var show_controls = document.createElement("button");
+    show_controls.setAttribute("id", "show_controls");
+    show_controls.addEventListener("click", function () {
+        _player.controls = !_player.controls;
+    });
+    show_controls.innerHTML = "Controls";
+    body.appendChild(show_controls);
+
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.open('GET', '/playlist.json', true);
     xmlhttp.onreadystatechange = function() {
@@ -78,7 +86,11 @@ function start_player() {
     xmlhttp.send(null);
 
     _stop.addEventListener("click", function () {
-        _player.pause();
+        if (_player.paused) {
+            _player.play();
+        } else {
+            _player.pause();
+        }
     });
     _player.addEventListener("ended", playNext);
     _playlist.addEventListener("click", function (e) {
