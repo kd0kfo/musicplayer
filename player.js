@@ -13,6 +13,15 @@ function playlistItemClick(clickedElement) {
     }
     clickedElement.classList.add("selected");
 
+    var newtitle = clickedElement.getAttribute("data-ogg");
+    if (newtitle !== null) {
+        var idx = newtitle.lastIndexOf("/");
+        if (idx != -1 && idx + 1 < newtitle.length) {
+            newtitle = newtitle.substr(idx + 1);
+        }
+        document.title = newtitle;
+    }
+
     _player.src = clickedElement.getAttribute("data-ogg");
     _player.play();
 }
