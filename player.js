@@ -6,6 +6,25 @@
 // globals
 var _player, _playlist, _stop, _next, _previous;
 
+function shuffle(array) {
+    // Credit where credit's due: Borrowed from https://bost.ocks.org/mike/shuffle/
+  var m = array.length, t, i;
+
+  // While there remain elements to shuffle…
+  while (m) {
+
+    // Pick a remaining element…
+    i = Math.floor(Math.random() * m--);
+
+    // And swap it with the current element.
+    t = array[m];
+    array[m] = array[i];
+    array[i] = t;
+  }
+
+  return array;
+}
+
 function playlistItemClick(clickedElement) {
     var selected = _playlist.querySelector(".selected");
     if (selected) {
@@ -60,6 +79,17 @@ function get_parameter(parameterName, defaultvalue) {
     return retval;
 }
 
+function have_parameter(parameter_name) {
+    var retval = false;
+    location.search.substr(1).split("&").forEach(function (item) {
+        console.log(parameter_name + "?=" + item);
+        if (item == parameter_name) {
+            retval = true;
+        }
+    });
+    return retval;
+}
+
 function start_player() {
 
     var body = document.getElementsByTagName("body")[0];
@@ -105,7 +135,11 @@ function start_player() {
         if (xmlhttp.readyState == 4) {
             if(xmlhttp.status == 200) {
                 var obj = JSON.parse(xmlhttp.responseText);
-                add_songs(obj["songs"]); 
+                var songlist = obj["songs"];
+                if (have_parameter("shuffle")) {
+                    songlist = shuffle(songlist);
+                }
+                add_songs(songlist); 
              }
         }
     };
