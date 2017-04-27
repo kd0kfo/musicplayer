@@ -25,6 +25,17 @@ function shuffle(array) {
   return array;
 }
 
+function get_title (songpath) {
+    var newtitle = songpath;
+    if (newtitle !== null) {
+        var idx = newtitle.lastIndexOf("/");
+        if (idx != -1 && idx + 1 < newtitle.length) {
+            newtitle = newtitle.substr(idx + 1);
+        }
+    }
+    return newtitle;
+}
+
 function playlistItemClick(clickedElement) {
     var selected = _playlist.querySelector(".selected");
     if (selected) {
@@ -42,10 +53,6 @@ function playlistItemClick(clickedElement) {
 
     var newtitle = songpath;
     if (newtitle !== null) {
-        var idx = newtitle.lastIndexOf("/");
-        if (idx != -1 && idx + 1 < newtitle.length) {
-            newtitle = newtitle.substr(idx + 1);
-        }
         document.title = newtitle;
     }
 
@@ -74,7 +81,7 @@ function refresh_songlist() {
         var songnode = document.createElement("li");
         songnode.setAttribute("songid", i);
         i++;
-        songnode.innerHTML = songpath;
+        songnode.innerHTML = get_title(songpath);
         _playlist.appendChild(songnode);
     }
 };
