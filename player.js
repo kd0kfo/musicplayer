@@ -4,7 +4,7 @@
 // is a list of song paths".
 //
 // globals
-var _player, _playlist, _stop, _next, _previous;
+var _player, _playlist, _stop, _next, _previous, _songs;
 
 function shuffle(array) {
     // Credit where credit's due: Borrowed from https://bost.ocks.org/mike/shuffle/
@@ -32,7 +32,15 @@ function playlistItemClick(clickedElement) {
     }
     clickedElement.classList.add("selected");
 
-    var newtitle = clickedElement.getAttribute("data-ogg");
+    var songidx = clickedElement.getAttribute("songid");
+    if (songidx == NaN || songidx >= _songs.length) {
+        console.log("Invalid song id");
+        return;
+    }
+
+    var songpath = _songs[songidx];
+
+    var newtitle = songpath;
     if (newtitle !== null) {
         var idx = newtitle.lastIndexOf("/");
         if (idx != -1 && idx + 1 < newtitle.length) {
@@ -41,7 +49,7 @@ function playlistItemClick(clickedElement) {
         document.title = newtitle;
     }
 
-    _player.src = clickedElement.getAttribute("data-ogg");
+    _player.src = songpath;
     _player.play();
 }
 
@@ -59,11 +67,13 @@ function playPrevious() {
     }
 }
 
-function add_songs(songlist) {
-    for (song in songlist) {
-        var songpath = songlist[song];
+function refresh_songlist() {
+    var i = 0;
+    for (song in _songs) {
+        var songpath = _songs[song];
         var songnode = document.createElement("li");
-        songnode.setAttribute("data-ogg", songpath);
+        songnode.setAttribute("songid", i);
+        i++;
         songnode.innerHTML = songpath;
         _playlist.appendChild(songnode);
     }
@@ -139,7 +149,8 @@ function start_player() {
                 if (have_parameter("shuffle")) {
                     songlist = shuffle(songlist);
                 }
-                add_songs(songlist); 
+                _songs = songlist;
+                refresh_songlist(); 
              }
         }
     };
