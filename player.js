@@ -4,7 +4,7 @@
 // is a list of song paths".
 //
 // globals
-var _player, _playlist, _stop, _next, _previous, _songs;
+var _player, _playlist, _stop, _next, _previous, _songs, _currpath;
 
 function shuffle(array) {
     // Credit where credit's due: Borrowed from https://bost.ocks.org/mike/shuffle/
@@ -58,6 +58,7 @@ function playlistItemClick(clickedElement) {
 
     _player.src = songpath;
     _player.play();
+    _currpath = songpath;
 }
 
 function playNext() {
@@ -74,12 +75,81 @@ function playPrevious() {
     }
 }
 
+function dragdrop(e) {
+    if (e.stopPropagation) {
+        e.stopPropagation();
+    }
+
+    if (e !== null && e.dataTransfer !== null) {
+        var orig_song_id = e.dataTransfer.getData('text/plain');
+        var this_song_id = this.getAttribute("songid");
+        console.log("Dropping " +  orig_song_id + " ahead of " + this_song_id);
+
+        orig_song_id = parseInt(orig_song_id);
+        this_song_id = parseInt(this_song_id);
+        if (orig_song_id == NaN || this_song_id == NaN || orig_song_id < 0 || this_song_id < 0 || orig_song_id > _songs.length || this_song_id > _songs.length) {
+            console.log("Invalid song id");
+            return;
+        }
+        if (orig_song_id == this_song_id) {
+            return;
+        }
+
+        if (orig_song_id < this_song_id) {
+            var orig_song = _songs[orig_song_id];
+            var beginning = _songs.slice(0, orig_song_id);
+            var middle = _songs.slice(orig_song_id+1, this_song_id).concat([orig_song]);
+            var end = _songs.slice(this_song_id, _songs.length);
+
+            _songs = beginning.concat(middle.concat(end));
+            refresh_songlist();
+        } else {
+            var orig_song = _songs[orig_song_id];
+            var beginning = _songs.slice(0, this_song_id);
+            var middle = [orig_song].concat(_songs.slice(this_song_id, orig_song_id));
+            var end = _songs.slice(orig_song_id+1, _songs.length);
+
+            _songs = beginning.concat(middle.concat(end));
+            refresh_songlist();
+        }
+    }
+}
+
+function dragover (e) {
+    if (e.preventDefault) {
+        e.preventDefault(); 
+    }
+  e.dataTransfer.dropEffect = 'move'; 
+  return false;
+}
+
+function dragstart(e) {
+    var songid = this.getAttribute("songid");
+    console.log("Drag start called on : " + songid);
+
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', songid);
+}
+
+function dragend(e) {
+    console.log("drag end");
+}
+
 function refresh_songlist() {
     var i = 0;
+    _playlist.innerHTML = "";
     for (song in _songs) {
         var songpath = _songs[song];
         var songnode = document.createElement("li");
         songnode.setAttribute("songid", i);
+        songnode.setAttribute("draggable", "true");
+        if (songpath == _currpath) {
+            songnode.setAttribute("class", "selected");
+        }
+        songnode.addEventListener("dragstart", dragstart, false);
+        songnode.addEventListener("dragend", dragend, false);
+        songnode.addEventListener("drop", dragdrop, false);
+        songnode.addEventListener("dragover", dragover, false);
         i++;
         songnode.innerHTML = get_title(songpath);
         _playlist.appendChild(songnode);
