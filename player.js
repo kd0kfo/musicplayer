@@ -83,8 +83,7 @@ function dragdrop(e) {
     if (e !== null && e.dataTransfer !== null) {
         var orig_song_id = e.dataTransfer.getData('text/plain');
         var this_song_id = this.getAttribute("songid");
-        console.log("Dropping " +  orig_song_id + " ahead of " + this_song_id);
-
+        
         orig_song_id = parseInt(orig_song_id);
         this_song_id = parseInt(this_song_id);
         if (orig_song_id == NaN || this_song_id == NaN || orig_song_id < 0 || this_song_id < 0 || orig_song_id > _songs.length || this_song_id > _songs.length) {
@@ -125,14 +124,12 @@ function dragover (e) {
 
 function dragstart(e) {
     var songid = this.getAttribute("songid");
-    console.log("Drag start called on : " + songid);
-
+    
   e.dataTransfer.effectAllowed = 'move';
   e.dataTransfer.setData('text/plain', songid);
 }
 
 function dragend(e) {
-    console.log("drag end");
 }
 
 function refresh_songlist() {
@@ -169,7 +166,6 @@ function get_parameter(parameterName, defaultvalue) {
 function have_parameter(parameter_name) {
     var retval = false;
     location.search.substr(1).split("&").forEach(function (item) {
-        console.log(parameter_name + "?=" + item);
         if (item == parameter_name) {
             retval = true;
         }
